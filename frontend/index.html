@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/main-favicon.png" />
+    <link rel="shortcut icon" type="image/png" href="/main-favicon.png" />
+    <link rel="apple-touch-icon" href="/main-favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SkillsHub Rwanda – Learning Platform</title>
+    <script>
+      // Apply colors immediately to prevent flash of incorrect colors
+      (function() {
+        try {
+          const storedColors = localStorage.getItem('systemColors');
+          if (storedColors) {
+            const colors = JSON.parse(storedColors);
+            const root = document.documentElement;
+            root.style.setProperty('--primary-color', colors.primaryColor || '#7c3aed');
+            root.style.setProperty('--secondary-color', colors.secondaryColor || '#f97316');
+            root.style.setProperty('--accent-color', colors.accentColor || '#6366f1');
+            root.style.setProperty('--success-color', colors.successColor || '#22c55e');
+            root.style.setProperty('--warning-color', colors.warningColor || '#facc15');
+            root.style.setProperty('--error-color', colors.errorColor || '#ef4444');
+          }
+        } catch (error) {
+          console.warn('Failed to apply stored colors:', error);
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
