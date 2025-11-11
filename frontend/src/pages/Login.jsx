@@ -38,11 +38,11 @@ const Login = () => {
           email: form.email,
           password: form.password
         });
-        if (response.success) {
-          navigate('/dashboard', { replace: true });
-        } else {
-          toast.error(response.message || 'Unable to sign in');
-        }
+    if (response.success) {
+      navigate('/dashboard', { replace: true });
+    } else {
+      toast.error(response.message || 'Unable to sign in');
+    }
       } else {
         const skillList = form.skills
           .split(',')
@@ -94,7 +94,7 @@ const Login = () => {
     <div className="flex min-h-screen items-center justify-center bg-white px-4 py-12 dark:bg-slate-950">
       <div className="grid w-full max-w-5xl overflow-hidden rounded-4xl border border-slate-100 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-900 md:grid-cols-[1.2fr,1fr]">
         <section className="relative hidden flex-col justify-between overflow-hidden bg-purple-700 p-10 text-white md:flex">
-          <div>
+        <div>
             <span className="inline-flex items-center rounded-full bg-white/15 px-4 py-1 text-xs font-semibold uppercase tracking-wide text-purple-100">
               SkillsHub Rwanda
             </span>
@@ -115,7 +115,7 @@ const Login = () => {
               <li>• Module-level tracking so you can celebrate progress</li>
               <li>• Communities and mentorship designed for Rwanda&apos;s youth</li>
             </ul>
-          </div>
+        </div>
         </section>
 
         <section className="p-8 md:p-12">
@@ -125,8 +125,8 @@ const Login = () => {
             </h2>
             <p className="text-sm text-slate-500 dark:text-slate-400">
               {sectionCopy.description}
-            </p>
-          </div>
+          </p>
+        </div>
 
           <form className="space-y-6" onSubmit={handleSubmit}>
             {mode === 'register' && (
@@ -218,21 +218,21 @@ const Login = () => {
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="sm:col-span-1">
-                <label className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                  Password
-                </label>
-                <div className="mt-2 flex items-center rounded-2xl border border-slate-200 bg-slate-50/70 px-4 py-3 focus-within:border-purple-400 focus-within:bg-white dark:border-slate-800 dark:bg-slate-900/70">
-                  <FiLock className="mr-3 text-lg text-slate-400" />
-                  <input
-                    type="password"
-                    name="password"
-                    required
-                    value={form.password}
-                    onChange={handleChange}
+              <label className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                Password
+            </label>
+              <div className="mt-2 flex items-center rounded-2xl border border-slate-200 bg-slate-50/70 px-4 py-3 focus-within:border-purple-400 focus-within:bg-white dark:border-slate-800 dark:bg-slate-900/70">
+                <FiLock className="mr-3 text-lg text-slate-400" />
+            <input
+                  type="password"
+                  name="password"
+              required
+                  value={form.password}
+                  onChange={handleChange}
                     placeholder={mode === 'register' ? 'Create a password' : 'Enter your password'}
-                    className="w-full bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400 dark:text-slate-100"
-                  />
-                </div>
+                  className="w-full bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400 dark:text-slate-100"
+            />
+          </div>
               </div>
 
               {mode === 'register' && (
@@ -254,16 +254,16 @@ const Login = () => {
                   </div>
                 </div>
               )}
-            </div>
+          </div>
 
-            <button
-              type="submit"
+          <button 
+            type="submit"
               disabled={submitting}
             className="w-full rounded-2xl bg-purple-600 px-6 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 dark:focus:ring-offset-slate-900 disabled:cursor-not-allowed disabled:opacity-80"
             >
               {sectionCopy.submitLabel}
-            </button>
-          </form>
+          </button>
+        </form>
 
           <div className="mt-6 flex items-center justify-center gap-2 text-sm">
             <span className="text-slate-500 dark:text-slate-400">{sectionCopy.togglePrompt}</span>

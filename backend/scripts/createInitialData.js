@@ -4,7 +4,9 @@ import Course from '../models/courseModel.js';
 import Enrollment from '../models/enrollmentModel.js';
 import User from '../models/userModel.js';
 
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/skillshub_rwanda';
+const MONGO_URI =
+  process.env.MONGO_URI ||
+  'mongodb+srv://masasu74:salomon123!@creditjambo.fad5qrn.mongodb.net/?appName=creditjambo';
 
 const connectDB = async () => {
   try {
@@ -27,13 +29,46 @@ const ensureUser = async (userData) => {
   return user;
 };
 
+const buildExercises = (moduleTitle) => [
+  `Create a mini project that demonstrates "${moduleTitle}" in a real-world context.`,
+  `Write a short reflection on how "${moduleTitle}" can benefit your community or workplace.`
+];
+
+const buildActivities = (moduleTitle) => [
+  `Pair with a peer to review each other's work for "${moduleTitle}" and share two pieces of feedback each.`,
+  `Document next steps you will take to deepen your mastery of "${moduleTitle}".`
+];
+
+const buildQuiz = (moduleTitle) => [
+  {
+    question: `What is the first step you should take when applying lessons from "${moduleTitle}"?`,
+    options: [
+      'Jump into implementation without planning',
+      'Clarify the problem and desired outcome',
+      'Wait for additional instructions before starting',
+      'Ignore user feedback until the end'
+    ],
+    answerIndex: 1
+  },
+  {
+    question: `How can you validate that you understand "${moduleTitle}"?`,
+    options: [
+      'Only re-read the notes',
+      'Teach the concept to someone else or apply it practically',
+      'Avoid any experimentation',
+      'Rely solely on quiz scores'
+    ],
+    answerIndex: 1
+  }
+];
+
 const createSampleCourses = async (instructors) => {
   const instructorByEmail = instructors.reduce((acc, instructor) => {
     acc[instructor.email] = instructor;
     return acc;
   }, {});
 
-  const sampleCourses = [
+  const baseSampleCourses = [
     {
       title: 'Web Development Fundamentals',
       description:
@@ -385,6 +420,16 @@ const createSampleCourses = async (instructors) => {
       ]
     }
   ];
+
+  const sampleCourses = baseSampleCourses.map((course) => ({
+    ...course,
+    modules: course.modules.map((module) => ({
+      ...module,
+      exercises: module.exercises?.length ? module.exercises : buildExercises(module.title),
+      activities: module.activities?.length ? module.activities : buildActivities(module.title),
+      quiz: module.quiz?.length ? module.quiz : buildQuiz(module.title)
+    }))
+  }));
 
   const createdCourses = [];
 

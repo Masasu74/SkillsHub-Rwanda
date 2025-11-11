@@ -48,7 +48,7 @@ const Navbar = () => {
           iconMoon={<FiMoon className="text-base" />}
         />
 
-        <div className="relative">
+        <div className="relative z-[999]">
           <button
             type="button"
             onClick={() => setMenuOpen((open) => !open)}

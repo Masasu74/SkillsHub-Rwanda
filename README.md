@@ -61,6 +61,7 @@ Create `backend/.env` (example):
 PORT=4000
 MONGO_URI=mongodb://127.0.0.1:27017/skillshub_rwanda
 JWT_SECRET=super-secure-secret
+CLOUDINARY_URL=cloudinary://<your_api_key>:OlqTmYvGe0wDz_47yBsecluGZzI@ddlrwdiu9
 ```
 
 Optionally create `frontend/.env` when pointing to a non-default API:
@@ -77,8 +78,9 @@ Creates:
 - Admin: `admin@skillshub.rw` / `Admin123!`
 - Instructors: Aline, Julien, Chloe (`Teach123!`)
 - Student: Emmanuel (`Student123!`)
-- Ten published courses with modules (technology, business, hospitality)
+- Ten published courses with modules, hands-on exercises, activities, and quizzes
 - Sample enrollments for the learner dashboard
+- Default Cloudinary folder for uploads: `skillshub/videos`
 
 ### 4. Run the stack
 ```bash

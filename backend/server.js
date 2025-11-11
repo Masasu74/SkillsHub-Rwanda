@@ -7,7 +7,9 @@ import courseRouter from './routes/courseRoute.js';
 import enrollmentRouter from './routes/enrollmentRoute.js';
 import progressRouter from './routes/progressRoute.js';
 import systemSettingsRouter from './routes/systemSettingsRoute.js';
+import uploadRouter from './routes/uploadRoute.js';
 import healthRouter from './routes/healthRoute.js';
+import './config/cloudinary.js';
 
 const app = express();   
 const port = process.env.PORT || 4000;
@@ -22,6 +24,7 @@ app.use('/api/courses', courseRouter);
 app.use('/api/enrollments', enrollmentRouter);
 app.use('/api/progress', progressRouter);
 app.use('/api/system-settings', systemSettingsRouter);
+app.use('/api/uploads', uploadRouter);
 app.use('/api', healthRouter);
 
 app.get('/', (_req, res) => {

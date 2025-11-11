@@ -27,6 +27,7 @@ const LoadingFallback = () => (
 const Landing = lazy(() => import('./pages/Landing'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const CourseCatalog = lazy(() => import('./pages/CourseCatalog'));
+const LearningOverview = lazy(() => import('./pages/LearningOverview'));
 const LearningInterface = lazy(() => import('./pages/LearningInterface'));
 const Login = lazy(() => import('./pages/Login'));
 
@@ -75,6 +76,7 @@ const App = () => {
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/courses" element={<CourseCatalog />} />
+          <Route path="/learn" element={<LearningOverview />} />
           <Route path="/learn/:courseId" element={<LearningInterface />} />
         </Route>
       </Route>
@@ -85,22 +87,22 @@ const App = () => {
     <ThemeProvider>
       <AppProvider>
         <SystemSettingsProvider>
-          <div className="App min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
-            <DynamicFavicon />
-            <DynamicTitle />
-            <RouterProvider router={router} />
-            <ToastContainer
-              position="top-right"
-              autoClose={4000}
-              hideProgressBar={false}
-              newestOnTop
-              closeOnClick
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-              theme="colored"
-            />
-          </div>
+        <div className="App min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+          <DynamicFavicon />
+          <DynamicTitle />
+          <RouterProvider router={router} />
+          <ToastContainer
+            position="top-right"
+            autoClose={4000}
+            hideProgressBar={false}
+            newestOnTop
+            closeOnClick
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="colored"
+          />
+        </div>
         </SystemSettingsProvider>
       </AppProvider>
     </ThemeProvider>

@@ -1,24 +1,17 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-import {
-  FiBarChart2,
-  FiBookOpen,
-  FiCompass,
-  FiHome,
-  FiLogOut,
-  FiMenu
-} from 'react-icons/fi';
+import { FiBookOpen, FiCompass, FiHome, FiLogOut, FiMenu } from 'react-icons/fi';
 import { useAppContext } from '../context/AppContext';
 
 const navItems = [
   { name: 'Dashboard', path: '/dashboard', icon: FiHome },
   { name: 'Courses', path: '/courses', icon: FiBookOpen },
-  { name: 'Learning', path: '/learn', icon: FiCompass, requiresCourseSelection: true }
+  { name: 'Learning', path: '/learn', icon: FiCompass }
 ];
 
 const Sidebar = ({ isCollapsed = false, onToggle }) => {
-  const { user, enrollments, logout } = useAppContext();
+  const { user, logout } = useAppContext();
   const navigate = useNavigate();
   const location = useLocation();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -33,24 +26,16 @@ const Sidebar = ({ isCollapsed = false, onToggle }) => {
       return null;
     }
 
-    if (item.requiresCourseSelection && enrollments.length === 0) {
-      return null;
-    }
-
     const Icon = item.icon;
     const isActive =
-      item.requiresCourseSelection && location.pathname.startsWith('/learn')
-        ? true
+      item.path === '/learn'
+        ? location.pathname.startsWith('/learn')
         : location.pathname === item.path;
 
     return (
       <NavLink
         key={item.name}
-        to={
-          item.requiresCourseSelection && enrollments.length > 0
-            ? `/learn/${enrollments[0].course?._id || enrollments[0].course}`
-            : item.path
-        }
+        to={item.path}
         onClick={() => setIsMobileOpen(false)}
         className={({ isActive: routeActive }) =>
           [
@@ -81,8 +66,8 @@ const Sidebar = ({ isCollapsed = false, onToggle }) => {
       ].join(' ')}
     >
       <div className="flex items-center justify-between px-4 py-5">
-        <button
-          onClick={() => navigate('/dashboard')}
+          <button
+            onClick={() => navigate('/dashboard')}
           className={[
             'flex items-center gap-3 rounded-xl transition',
             isCollapsed ? 'justify-center px-2 py-2' : 'px-3 py-2'
@@ -107,7 +92,7 @@ const Sidebar = ({ isCollapsed = false, onToggle }) => {
               </span>
             </div>
           )}
-        </button>
+          </button>
         <button
           onClick={() => {
             setIsMobileOpen((open) => !open);

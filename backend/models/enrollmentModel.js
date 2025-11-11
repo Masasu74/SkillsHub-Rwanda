@@ -27,6 +27,29 @@ const enrollmentSchema = new mongoose.Schema(
         type: mongoose.Schema.Types.ObjectId
       }
     ],
+    completedExercises: [
+      {
+        moduleId: { type: mongoose.Schema.Types.ObjectId, required: true },
+        exerciseIndex: { type: Number, required: true },
+        completedAt: { type: Date, default: Date.now }
+      }
+    ],
+    completedActivities: [
+      {
+        moduleId: { type: mongoose.Schema.Types.ObjectId, required: true },
+        activityIndex: { type: Number, required: true },
+        completedAt: { type: Date, default: Date.now }
+      }
+    ],
+    quizResults: [
+      {
+        moduleId: { type: mongoose.Schema.Types.ObjectId, required: true },
+        score: { type: Number, required: true, min: 0 },
+        total: { type: Number, required: true, min: 1 },
+        passed: { type: Boolean, default: false },
+        submittedAt: { type: Date, default: Date.now }
+      }
+    ],
     lastAccessed: {
       type: Date,
       default: Date.now
@@ -35,6 +58,13 @@ const enrollmentSchema = new mongoose.Schema(
       type: String,
       enum: ['active', 'completed', 'dropped'],
       default: 'active'
+    },
+    certificateIssuedAt: {
+      type: Date
+    },
+    certificateId: {
+      type: String,
+      trim: true
     }
   },
   {

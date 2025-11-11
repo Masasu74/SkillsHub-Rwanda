@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 
-const DEFAULT_URI = 'mongodb://127.0.0.1:27017/skillshub_rwanda';
+const DEFAULT_URI =
+  'mongodb+srv://masasu74:salomon123!@creditjambo.fad5qrn.mongodb.net/?appName=creditjambo';
 
 export const connectDB = async () => {
   const uri = process.env.MONGO_URI || DEFAULT_URI;

@@ -31,11 +31,15 @@ export const enrollInCourse = async (req, res) => {
 
     await enrollment.save();
 
-    const populatedEnrollment = await enrollment
-      .populate('course')
-      .populate('student', 'name email profile');
+    await enrollment.populate([
+      {
+        path: 'course',
+        populate: { path: 'instructor', select: 'name email profile' }
+      },
+      { path: 'student', select: 'name email profile' }
+    ]);
 
-    res.status(201).json({ success: true, data: populatedEnrollment });
+    res.status(201).json({ success: true, data: enrollment });
   } catch (error) {
     console.error('Enrollment error:', error);
     res.status(500).json({ success: false, message: 'Failed to enroll in course' });

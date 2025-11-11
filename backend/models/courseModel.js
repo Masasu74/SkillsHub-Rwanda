@@ -6,7 +6,16 @@ const courseModuleSchema = new mongoose.Schema(
     content: { type: String, default: '' },
     videoUrl: { type: String, default: '' },
     duration: { type: Number, default: 0 },
-    resources: [{ type: String, trim: true }]
+    resources: [{ type: String, trim: true }],
+    exercises: [{ type: String, trim: true }],
+    activities: [{ type: String, trim: true }],
+    quiz: [
+      {
+        question: { type: String, required: true, trim: true },
+        options: [{ type: String, required: true, trim: true }],
+        answerIndex: { type: Number, required: true, min: 0 }
+      }
+    ]
   },
   {
     _id: true,

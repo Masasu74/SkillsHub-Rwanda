@@ -65,6 +65,38 @@ export const AppProvider = ({ children }) => {
 
   const api = useMemo(() => createApiClient(), []);
 
+  const mergeEnrollment = useCallback(
+    (updatedEnrollment) => {
+      if (!updatedEnrollment) return;
+
+      const updatedCourseId =
+        typeof updatedEnrollment.course === 'string'
+          ? updatedEnrollment.course
+          : updatedEnrollment.course?._id?.toString();
+
+      setEnrollments((prev) => {
+        let found = false;
+
+        const next = prev.map((enrollment) => {
+          const enrollmentCourseId =
+            typeof enrollment.course === 'string'
+              ? enrollment.course
+              : enrollment.course?._id?.toString();
+
+          if (enrollmentCourseId === updatedCourseId) {
+            found = true;
+            return updatedEnrollment;
+          }
+
+          return enrollment;
+        });
+
+        return found ? next : [...prev, updatedEnrollment];
+      });
+    },
+    [setEnrollments]
+  );
+
   const handleAuthSuccess = useCallback((data) => {
     if (!data?.token || !data?.user) {
       throw new Error('Invalid authentication response');
@@ -238,25 +270,7 @@ export const AppProvider = ({ children }) => {
         const updatedEnrollment = moduleId ? data.data.enrollment : data.data;
         const progressEntry = moduleId ? data.data.progressEntry : undefined;
 
-        setEnrollments((prev) => {
-          let found = false;
-
-          const next = prev.map((enrollment) => {
-            const enrollmentCourseId =
-              typeof enrollment.course === 'string'
-                ? enrollment.course
-                : enrollment.course?._id?.toString();
-
-            if (enrollmentCourseId === normalizedCourseId) {
-              found = true;
-              return updatedEnrollment;
-            }
-
-            return enrollment;
-          });
-
-          return found ? next : [...prev, updatedEnrollment];
-        });
+        mergeEnrollment(updatedEnrollment);
 
         return {
           success: true,
@@ -267,6 +281,79 @@ export const AppProvider = ({ children }) => {
         };
       } catch (progressError) {
         const message = progressError.response?.data?.message || 'Failed to update progress';
+        toast.error(message);
+        return { success: false, message };
+      }
+    },
+    [api, mergeEnrollment]
+  );
+
+  const completePracticeItem = useCallback(
+    async ({ courseId, moduleId, itemIndex, itemType, completed = true }) => {
+      try {
+        const { data } = await api.put('/progress/practice-complete', {
+          courseId,
+          moduleId,
+          itemIndex,
+          itemType,
+          completed
+        });
+
+        if (!data.success) {
+          return { success: false, message: data.message };
+        }
+
+        mergeEnrollment(data.data.enrollment);
+        return { success: true, data: data.data };
+      } catch (practiceError) {
+        const message =
+          practiceError.response?.data?.message || 'Failed to update practice item';
+        toast.error(message);
+        return { success: false, message };
+      }
+    },
+    [api, mergeEnrollment]
+  );
+
+  const submitQuizAttempt = useCallback(
+    async ({ courseId, moduleId, answers }) => {
+      try {
+        const { data } = await api.post('/progress/quiz', {
+          courseId,
+          moduleId,
+          answers
+        });
+
+        if (!data.success) {
+          return { success: false, message: data.message };
+        }
+
+        mergeEnrollment(data.data.enrollment);
+
+        return {
+          success: true,
+          data: data.data
+        };
+      } catch (quizError) {
+        const message = quizError.response?.data?.message || 'Failed to submit quiz';
+        toast.error(message);
+        return { success: false, message };
+      }
+    },
+    [api, mergeEnrollment]
+  );
+
+  const fetchCertificate = useCallback(
+    async (courseId) => {
+      try {
+        const { data } = await api.get(`/progress/${courseId}/certificate`);
+        if (data.success) {
+          return { success: true, data: data.data };
+        }
+        return { success: false, message: data.message };
+      } catch (certificateError) {
+        const message =
+          certificateError.response?.data?.message || 'Failed to load certificate';
         toast.error(message);
         return { success: false, message };
       }
@@ -306,6 +393,9 @@ export const AppProvider = ({ children }) => {
         fetchEnrollments,
         enrollInCourse,
         updateProgress,
+        completePracticeItem,
+        submitQuizAttempt,
+        fetchCertificate,
         getCourseProgress
       }}
     >
