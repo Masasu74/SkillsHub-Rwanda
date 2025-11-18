@@ -147,6 +147,36 @@ export const getCourseProgress = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Enrollment not found' });
     }
 
+    // Recalculate progress to ensure accuracy
+    const recalculatedProgress = calculateOverallProgress(course, enrollment);
+    
+    // Check if progress needs to be updated
+    if (enrollment.progress !== recalculatedProgress) {
+      enrollment.progress = recalculatedProgress;
+      enrollment.lastAccessed = new Date();
+      
+      // Update status based on progress
+      if (recalculatedProgress === 100 && enrollment.status !== 'completed') {
+        enrollment.status = 'completed';
+      } else if (recalculatedProgress < 100 && enrollment.status === 'completed') {
+        enrollment.status = 'active';
+      }
+      
+      // Check if certificate should be issued
+      if (recalculatedProgress === 100 && !enrollment.certificateIssuedAt) {
+        maybeIssueCertificate(course, enrollment);
+      }
+      
+      await enrollment.save();
+      // Re-populate student after save
+      await enrollment.populate('student', 'name email profile');
+    } else if (!enrollment.certificateIssuedAt && recalculatedProgress === 100) {
+      // Progress is already 100%, but certificate might not be issued yet
+      maybeIssueCertificate(course, enrollment);
+      await enrollment.save();
+      await enrollment.populate('student', 'name email profile');
+    }
+
     const progressEntries = await ProgressEntry.find({
       student: req.user._id,
       course: courseId
