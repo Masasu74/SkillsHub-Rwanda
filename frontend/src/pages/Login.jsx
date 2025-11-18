@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { FiLock, FiMail, FiMapPin, FiUser } from 'react-icons/fi';
+import { useNavigate, Link } from 'react-router-dom';
+import { FiArrowLeft, FiLock, FiMail, FiMapPin, FiUser } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 import { useAppContext } from '../context/AppContext';
 
@@ -119,6 +119,13 @@ const Login = () => {
         </section>
 
         <section className="p-8 md:p-12">
+          <Link
+            to="/"
+            className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-slate-600 transition hover:text-purple-600 dark:text-slate-400 dark:hover:text-purple-200"
+          >
+            <FiArrowLeft />
+            Back to Home
+          </Link>
           <div className="mb-10 space-y-2">
             <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">
               {sectionCopy.heading}

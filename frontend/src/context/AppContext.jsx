@@ -375,6 +375,256 @@ export const AppProvider = ({ children }) => {
     [api]
   );
 
+  const fetchInstructors = useCallback(
+    async () => {
+      try {
+        const { data } = await api.get('/auth/instructors');
+        if (data.success) {
+          return { success: true, data: data.data };
+        }
+        return { success: false, message: data.message };
+      } catch (error) {
+        const message = error.response?.data?.message || 'Failed to fetch instructors';
+        toast.error(message);
+        return { success: false, message };
+      }
+    },
+    [api]
+  );
+
+  const fetchInstructorById = useCallback(
+    async (instructorId) => {
+      try {
+        const { data } = await api.get(`/auth/instructors/${instructorId}`);
+        if (data.success) {
+          return { success: true, data: data.data };
+        }
+        return { success: false, message: data.message };
+      } catch (error) {
+        const message = error.response?.data?.message || 'Failed to fetch instructor';
+        toast.error(message);
+        return { success: false, message };
+      }
+    },
+    [api]
+  );
+
+  const createInstructor = useCallback(
+    async ({ name, email, password, bio, skills, location }) => {
+      try {
+        const { data } = await api.post('/auth/instructors', {
+          name,
+          email,
+          password,
+          bio,
+          skills,
+          location
+        });
+        if (data.success) {
+          toast.success(`Instructor ${name} created successfully!`);
+        }
+        return { success: true, data: data.data };
+      } catch (instructorError) {
+        const message = instructorError.response?.data?.message || 'Failed to create instructor';
+        toast.error(message);
+        return { success: false, message };
+      }
+    },
+    [api]
+  );
+
+  const updateInstructor = useCallback(
+    async (instructorId, updateData) => {
+      try {
+        const { data } = await api.put(`/auth/instructors/${instructorId}`, updateData);
+        if (data.success) {
+          toast.success('Instructor updated successfully!');
+        }
+        return { success: true, data: data.data };
+      } catch (error) {
+        const message = error.response?.data?.message || 'Failed to update instructor';
+        toast.error(message);
+        return { success: false, message };
+      }
+    },
+    [api]
+  );
+
+  const deleteInstructor = useCallback(
+    async (instructorId) => {
+      try {
+        const { data } = await api.delete(`/auth/instructors/${instructorId}`);
+        if (data.success) {
+          toast.success('Instructor deleted successfully!');
+        }
+        return { success: true };
+      } catch (error) {
+        const message = error.response?.data?.message || 'Failed to delete instructor';
+        toast.error(message);
+        return { success: false, message };
+      }
+    },
+    [api]
+  );
+
+  const fetchMyCourses = useCallback(
+    async () => {
+      setCoursesLoading(true);
+      try {
+        const { data } = await api.get('/courses/my-courses');
+        if (data.success) {
+          setCourses(data.data);
+        } else {
+          setCourses([]);
+        }
+      } catch (fetchError) {
+        setError(fetchError.message);
+        setCourses([]);
+      } finally {
+        setCoursesLoading(false);
+      }
+    },
+    [api]
+  );
+
+  const createCourse = useCallback(
+    async (courseData) => {
+      try {
+        const { data } = await api.post('/courses', courseData);
+        if (data.success) {
+          toast.success('Course created successfully!');
+          setCourses((prev) => [data.data, ...prev]);
+        }
+        return { success: true, data: data.data };
+      } catch (courseError) {
+        const message = courseError.response?.data?.message || 'Failed to create course';
+        toast.error(message);
+        return { success: false, message };
+      }
+    },
+    [api]
+  );
+
+  const updateCourse = useCallback(
+    async (courseId, courseData) => {
+      try {
+        const { data } = await api.put(`/courses/${courseId}`, courseData);
+        if (data.success) {
+          toast.success('Course updated successfully!');
+          setCourses((prev) =>
+            prev.map((course) => (course._id === courseId ? data.data : course))
+          );
+        }
+        return { success: true, data: data.data };
+      } catch (courseError) {
+        const message = courseError.response?.data?.message || 'Failed to update course';
+        toast.error(message);
+        return { success: false, message };
+      }
+    },
+    [api]
+  );
+
+  const fetchCourseById = useCallback(
+    async (courseId) => {
+      try {
+        const { data } = await api.get(`/courses/${courseId}`);
+        if (data.success) {
+          return { success: true, data: data.data };
+        }
+        return { success: false, message: data.message };
+      } catch (courseError) {
+        const message = courseError.response?.data?.message || 'Failed to fetch course';
+        toast.error(message);
+        return { success: false, message };
+      }
+    },
+    [api]
+  );
+
+  const deleteCourse = useCallback(
+    async (courseId) => {
+      try {
+        const { data } = await api.delete(`/courses/${courseId}`);
+        if (data.success) {
+          toast.success('Course deleted successfully!');
+          setCourses((prev) => prev.filter((course) => course._id !== courseId));
+        }
+        return { success: true };
+      } catch (courseError) {
+        const message = courseError.response?.data?.message || 'Failed to delete course';
+        toast.error(message);
+        return { success: false, message };
+      }
+    },
+    [api]
+  );
+
+  const fetchCourseEnrollments = useCallback(
+    async (courseId) => {
+      try {
+        const { data } = await api.get(`/courses/${courseId}/enrollments`);
+        if (data.success) {
+          return { success: true, data: data.data };
+        }
+        return { success: false, message: data.message };
+      } catch (error) {
+        const message = error.response?.data?.message || 'Failed to fetch enrollments';
+        toast.error(message);
+        return { success: false, message };
+      }
+    },
+    [api]
+  );
+
+  const fetchCourseAnalytics = useCallback(
+    async (courseId) => {
+      try {
+        const { data } = await api.get(`/courses/${courseId}/analytics`);
+        if (data.success) {
+          return { success: true, data: data.data };
+        }
+        return { success: false, message: data.message };
+      } catch (error) {
+        const message = error.response?.data?.message || 'Failed to fetch analytics';
+        toast.error(message);
+        return { success: false, message };
+      }
+    },
+    [api]
+  );
+
+  const uploadFile = useCallback(
+    async (file, resourceType = 'auto', folder = null) => {
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        if (resourceType !== 'auto') {
+          formData.append('resourceType', resourceType);
+        }
+        if (folder) {
+          formData.append('folder', folder);
+        }
+
+        const { data } = await api.post('/uploads/file', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+
+        if (data.success) {
+          return { success: true, data: data.data };
+        }
+        return { success: false, message: data.message };
+      } catch (uploadError) {
+        const message = uploadError.response?.data?.message || 'Failed to upload file';
+        toast.error(message);
+        return { success: false, message };
+      }
+    },
+    [api]
+  );
+
   return (
     <AppContext.Provider
               value={{
@@ -396,7 +646,20 @@ export const AppProvider = ({ children }) => {
         completePracticeItem,
         submitQuizAttempt,
         fetchCertificate,
-        getCourseProgress
+        getCourseProgress,
+        fetchInstructors,
+        fetchInstructorById,
+        createInstructor,
+        updateInstructor,
+        deleteInstructor,
+        fetchMyCourses,
+        createCourse,
+        updateCourse,
+        deleteCourse,
+        fetchCourseById,
+        fetchCourseEnrollments,
+        fetchCourseAnalytics,
+        uploadFile
       }}
     >
       {children}

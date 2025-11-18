@@ -1,13 +1,17 @@
 import PropTypes from 'prop-types';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { FiBookOpen, FiCompass, FiHome, FiLogOut, FiMenu } from 'react-icons/fi';
+import { FiBookOpen, FiCompass, FiHome, FiLogOut, FiMenu, FiUserPlus, FiPlus, FiList, FiUsers } from 'react-icons/fi';
 import { useAppContext } from '../context/AppContext';
 
-const navItems = [
-  { name: 'Dashboard', path: '/dashboard', icon: FiHome },
-  { name: 'Courses', path: '/courses', icon: FiBookOpen },
-  { name: 'Learning', path: '/learn', icon: FiCompass }
+const allNavItems = [
+  { name: 'Dashboard', path: '/dashboard', icon: FiHome, roles: ['student', 'instructor', 'admin'] },
+  { name: 'Courses', path: '/courses', icon: FiBookOpen, roles: ['student'] },
+  { name: 'Learning', path: '/learn', icon: FiCompass, roles: ['student'] },
+  { name: 'Manage Instructors', path: '/instructors', icon: FiUsers, roles: ['admin'] },
+  { name: 'Create Instructor', path: '/create-instructor', icon: FiUserPlus, roles: ['admin'] },
+  { name: 'Create Course', path: '/create-course', icon: FiPlus, roles: ['instructor', 'admin'] },
+  { name: 'My Courses', path: '/my-courses', icon: FiList, roles: ['instructor', 'admin'] }
 ];
 
 const Sidebar = ({ isCollapsed = false, onToggle }) => {
@@ -15,6 +19,11 @@ const Sidebar = ({ isCollapsed = false, onToggle }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+
+  const navItems = useMemo(() => {
+    if (!user) return [];
+    return allNavItems.filter((item) => item.roles.includes(user.role));
+  }, [user]);
 
   const handleLogout = () => {
     logout();
@@ -29,7 +38,13 @@ const Sidebar = ({ isCollapsed = false, onToggle }) => {
     const Icon = item.icon;
     const isActive =
       item.path === '/learn'
-        ? location.pathname.startsWith('/learn')
+        ? location.pathname.startsWith('/learn') && !location.pathname.includes('/edit')
+        : item.path === '/my-courses'
+        ? location.pathname === '/my-courses'
+        : item.path === '/instructors'
+        ? location.pathname === '/instructors' || location.pathname === '/create-instructor' || location.pathname.startsWith('/instructors/')
+        : item.path === '/create-course'
+        ? location.pathname === '/create-course' || (location.pathname.includes('/courses/') && location.pathname.includes('/edit'))
         : location.pathname === item.path;
 
     return (

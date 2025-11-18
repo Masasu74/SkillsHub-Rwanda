@@ -132,7 +132,7 @@ export const getCourseProgress = async (req, res) => {
   try {
     const { courseId } = req.params;
 
-    const course = await Course.findById(courseId);
+    const course = await Course.findById(courseId).populate('instructor', 'name email profile');
 
     if (!course) {
       return res.status(404).json({ success: false, message: 'Course not found' });
@@ -141,7 +141,7 @@ export const getCourseProgress = async (req, res) => {
     const enrollment = await Enrollment.findOne({
       course: courseId,
       student: req.user._id
-    });
+    }).populate('student', 'name email profile');
 
     if (!enrollment) {
       return res.status(404).json({ success: false, message: 'Enrollment not found' });
@@ -183,7 +183,7 @@ export const markModuleComplete = async (req, res) => {
     const enrollment = await Enrollment.findOne({
       course: courseId,
       student: req.user._id
-    });
+    }).populate('student', 'name email profile');
 
     if (!enrollment) {
       return res.status(404).json({ success: false, message: 'Enrollment not found' });
@@ -258,6 +258,9 @@ export const markModuleComplete = async (req, res) => {
 
     await enrollment.save();
 
+    // Re-populate student after save
+    await enrollment.populate('student', 'name email profile');
+
     res.status(200).json({
       success: true,
       data: {
@@ -304,7 +307,7 @@ export const completePracticeItem = async (req, res) => {
     const enrollment = await Enrollment.findOne({
       course: courseId,
       student: req.user._id
-    });
+    }).populate('student', 'name email profile');
 
     if (!enrollment) {
       return res.status(404).json({ success: false, message: 'Enrollment not found' });
@@ -336,6 +339,9 @@ export const completePracticeItem = async (req, res) => {
     const certificateIssued = maybeIssueCertificate(course, enrollment);
 
     await enrollment.save();
+
+    // Re-populate student after save
+    await enrollment.populate('student', 'name email profile');
 
     res.status(200).json({
       success: true,
@@ -400,7 +406,7 @@ export const submitQuiz = async (req, res) => {
     const enrollment = await Enrollment.findOne({
       course: courseId,
       student: req.user._id
-    });
+    }).populate('student', 'name email profile');
 
     if (!enrollment) {
       return res.status(404).json({ success: false, message: 'Enrollment not found' });
@@ -423,6 +429,9 @@ export const submitQuiz = async (req, res) => {
     const certificateIssued = maybeIssueCertificate(course, enrollment);
 
     await enrollment.save();
+
+    // Re-populate student after save
+    await enrollment.populate('student', 'name email profile');
 
     res.status(200).json({
       success: true,

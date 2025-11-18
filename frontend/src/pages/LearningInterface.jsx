@@ -29,6 +29,7 @@ const LearningInterface = () => {
   const { courseId } = useParams();
   const {
     api,
+    user,
     enrollments,
     getCourseProgress,
     updateProgress,
@@ -272,88 +273,135 @@ const LearningInterface = () => {
     : null;
 
   const handleCertificateDownload = async () => {
-    if (!certificateIssued || !course) return;
-    const issuedAt = certificateIssuedDate?.toLocaleDateString();
-    const doc = new jsPDF('landscape', 'pt', 'a4');
-    const width = doc.internal.pageSize.getWidth();
-    const height = doc.internal.pageSize.getHeight();
+    try {
+      if (!certificateIssued || !course) {
+        toast.error('Certificate not available yet. Please complete all course requirements.');
+        console.warn('Certificate download blocked:', { certificateIssued, course: !!course });
+        return;
+      }
 
-    doc.setFillColor(241, 245, 249);
-    doc.rect(0, 0, width, height, 'F');
+      // Get student name from enrollment or fall back to user context
+      const studentName = activeEnrollment?.student?.name || 
+                         (typeof activeEnrollment?.student === 'string' ? user?.name : null) ||
+                         user?.name;
 
-    doc.setDrawColor(124, 58, 237);
-    doc.setLineWidth(6);
-    doc.roundedRect(40, 40, width - 80, height - 80, 20, 20);
+      if (!studentName) {
+        toast.error('Unable to generate certificate. Student information is missing.');
+        console.error('Missing student information:', { 
+          activeEnrollment, 
+          user,
+          studentInEnrollment: activeEnrollment?.student 
+        });
+        return;
+      }
 
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(28);
-    doc.setTextColor(124, 58, 237);
-    doc.text('Certificate of Completion', width / 2, 120, { align: 'center' });
+      const issuedAt = certificateIssuedDate?.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
 
-    doc.setFontSize(14);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(15, 23, 42);
-    doc.text('This certifies that', width / 2, 170, { align: 'center' });
+      const doc = new jsPDF({
+        orientation: 'landscape',
+        unit: 'pt',
+        format: 'a4'
+      });
 
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(24);
-    doc.text(
-      (activeEnrollment?.student?.name || 'A SkillsHub Learner').toUpperCase(),
-      width / 2,
-      210,
-      { align: 'center' }
-    );
+      const width = doc.internal.pageSize.getWidth();
+      const height = doc.internal.pageSize.getHeight();
 
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(14);
-    doc.text('has successfully completed the course', width / 2, 250, { align: 'center' });
+      // Background
+      doc.setFillColor(241, 245, 249);
+      doc.rect(0, 0, width, height, 'F');
 
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(22);
-    doc.text(`"${course.title}"`, width / 2, 290, { align: 'center' });
+      // Border
+      doc.setDrawColor(124, 58, 237);
+      doc.setLineWidth(6);
+      doc.rect(40, 40, width - 80, height - 80, 'S');
 
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(12);
-    doc.text(
-      'delivered by SkillsHub Rwanda',
-      width / 2,
-      320,
-      { align: 'center' }
-    );
+      // Title
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(28);
+      doc.setTextColor(124, 58, 237);
+      doc.text('Certificate of Completion', width / 2, 120, { align: 'center' });
 
-    doc.setFontSize(11);
-    doc.text(
-      `Issued on ${issuedAt || 'Recently'} | Certificate ID: ${activeEnrollment.certificateId}`,
-      width / 2,
-      360,
-      { align: 'center' }
-    );
+      // Subtitle
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(15, 23, 42);
+      doc.text('This certifies that', width / 2, 170, { align: 'center' });
 
-    const signatureImage = await loadImageData(CERT_SIGNATURE);
-    const signatureWidth = 160;
-    const signatureHeight = 60;
-    const signatureX = width / 2 - signatureWidth / 2;
-    const signatureY = 420;
+      // Student Name
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(24);
+      const displayStudentName = (studentName || 'A SkillsHub Learner').toUpperCase();
+      doc.text(displayStudentName, width / 2, 210, { align: 'center', maxWidth: width - 160 });
 
-    if (signatureImage) {
-      doc.addImage(signatureImage, 'PNG', signatureX, signatureY, signatureWidth, signatureHeight);
-    } else {
-      doc.setFont('helvetica', 'italic');
-      doc.text('Signature', width / 2, signatureY + 30, { align: 'center' });
-    }
+      // Description
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(14);
+      doc.text('has successfully completed the course', width / 2, 250, { align: 'center' });
 
-    doc.setDrawColor(168, 85, 247);
-    doc.line(signatureX, signatureY + signatureHeight + 10, signatureX + signatureWidth, signatureY + signatureHeight + 10);
+      // Course Title
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(22);
+      doc.text(`"${course.title}"`, width / 2, 290, { align: 'center', maxWidth: width - 160 });
 
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(12);
-    doc.text('Programme Lead', width / 2, signatureY + signatureHeight + 30, { align: 'center' });
+      // Institution
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(12);
+      doc.text('delivered by SkillsHub Rwanda', width / 2, 320, { align: 'center' });
 
-    doc.save(
-      `${(activeEnrollment?.student?.name || 'skillsHub_learner')
+      // Date and ID
+      doc.setFontSize(11);
+      doc.setTextColor(100, 116, 139);
+      const dateText = `Issued on ${issuedAt || 'Recently'} | Certificate ID: ${activeEnrollment.certificateId || 'N/A'}`;
+      doc.text(dateText, width / 2, 360, { align: 'center' });
+
+      // Signature
+      const signatureWidth = 160;
+      const signatureHeight = 60;
+      const signatureX = width / 2 - signatureWidth / 2;
+      const signatureY = 420;
+
+      try {
+        const signatureImage = await loadImageData(CERT_SIGNATURE);
+        if (signatureImage) {
+          doc.addImage(signatureImage, 'PNG', signatureX, signatureY, signatureWidth, signatureHeight);
+        } else {
+          doc.setFont('helvetica', 'italic');
+          doc.setTextColor(15, 23, 42);
+          doc.text('Signature', width / 2, signatureY + 30, { align: 'center' });
+        }
+      } catch (imageError) {
+        console.warn('Failed to load signature image:', imageError);
+        doc.setFont('helvetica', 'italic');
+        doc.setTextColor(15, 23, 42);
+        doc.text('Signature', width / 2, signatureY + 30, { align: 'center' });
+      }
+
+      // Signature line
+      doc.setDrawColor(168, 85, 247);
+      doc.setLineWidth(2);
+      doc.line(signatureX, signatureY + signatureHeight + 10, signatureX + signatureWidth, signatureY + signatureHeight + 10);
+
+      // Title below signature
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(12);
+      doc.setTextColor(15, 23, 42);
+      doc.text('Programme Lead', width / 2, signatureY + signatureHeight + 30, { align: 'center' });
+
+      // Save PDF
+      const fileName = `${(studentName || 'skillsHub_learner')
         .toLowerCase()
-        .replace(/\s+/g, '_')}_certificate.pdf`
-    );
+        .replace(/\s+/g, '_')}_certificate.pdf`;
+      
+      doc.save(fileName);
+      toast.success('Certificate downloaded successfully!');
+    } catch (error) {
+      console.error('Error generating certificate:', error);
+      toast.error('Failed to generate certificate. Please try again.');
+    }
   };
 
   if (loading) {
