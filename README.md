@@ -1,4 +1,4 @@
-# SkillsHub Rwanda – Learning Platform MVP
+# SkillsHub Rwanda – Learning Platform MVP.
 
 SkillsHub Rwanda helps young people in Rwanda discover practical, job-ready skills.  
 The current MVP delivers a streamlined learning experience with a modern landing page, featured course carousel, comprehensive course management, role-based access control, and automated certificate generation.
