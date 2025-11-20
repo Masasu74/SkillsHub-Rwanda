@@ -3,6 +3,12 @@
 SkillsHub Rwanda helps young people in Rwanda discover practical, job-ready skills.  
 The current MVP delivers a streamlined learning experience with a modern landing page, featured course carousel, comprehensive course management, role-based access control, and automated certificate generation.
 
+## 🚀 Live Deployment
+
+🌐 **Frontend (Vercel):** [View Live Application](https://skills-hub-rwanda-a5v4m3qoh-masasusalomon-9438s-projects.vercel.app/)
+
+🔧 **Backend API (Railway):** [API Endpoint](https://skillshub-rwanda-production.up.railway.app/api)
+
 ---
 
 ## Table of Contents
@@ -545,6 +551,16 @@ skillshub-rwanda/
 ---
 
 ## Deployment Notes
+
+### Live Deployment
+
+🌐 **Frontend (Vercel):** [https://skills-hub-rwanda-a5v4m3qoh-masasusalomon-9438s-projects.vercel.app/](https://skills-hub-rwanda-a5v4m3qoh-masasusalomon-9438s-projects.vercel.app/)
+
+🔧 **Backend API (Railway):** [https://skillshub-rwanda-production.up.railway.app/api](https://skillshub-rwanda-production.up.railway.app/api)
+
+---
+
+### Deployment Instructions
 
 - **Backend**: Deploy as Node.js application (Render, Railway, Fly.io, etc.)
 - **Frontend**: Deploy as static site (Netlify, Vercel, Cloudflare Pages, etc.)
