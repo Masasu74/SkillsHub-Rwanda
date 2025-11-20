@@ -5,7 +5,7 @@ The current MVP delivers a streamlined learning experience with a modern landing
 
 ## 🚀 Live Deployment
 
-🌐 **Frontend (Vercel):** [View Live Application](https://skills-hub-rwanda-a5v4m3qoh-masasusalomon-9438s-projects.vercel.app/)
+🌐 **Frontend (Vercel):** [View Live Application](https://skills-hub-rwanda.vercel.app/)
 
 🔧 **Backend API (Railway):** [API Endpoint](https://skillshub-rwanda-production.up.railway.app/api)
 
@@ -554,7 +554,7 @@ skillshub-rwanda/
 
 ### Live Deployment
 
-🌐 **Frontend (Vercel):** [https://skills-hub-rwanda-a5v4m3qoh-masasusalomon-9438s-projects.vercel.app/](https://skills-hub-rwanda-a5v4m3qoh-masasusalomon-9438s-projects.vercel.app/)
+🌐 **Frontend (Vercel):** [https://skills-hub-rwanda.vercel.app/](https://skills-hub-rwanda.vercel.app/)
 
 🔧 **Backend API (Railway):** [https://skillshub-rwanda-production.up.railway.app/api](https://skillshub-rwanda-production.up.railway.app/api)
 
